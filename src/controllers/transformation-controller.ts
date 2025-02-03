@@ -93,12 +93,20 @@ const EXTENSIONS = [
   InformationPane,
 ];
 
+export const ADDITIONAL_EXTENSIONS = new Map<string, any>([
+  ["conversation-history", ConversationHistory],
+]);
+
 export function transformController(
   req: AuthenticatedRequest,
   res: Response,
   serviceVersion: number,
 ): Promise<void> {
   const data: ContentTransformerRequest = req.body as ContentTransformerRequest;
+  const extensions: any[] = [...EXTENSIONS];
+  if (data.additionalExtensionIds !== null && data.additionalExtensionIds.length > 0) {
+    extensions.concat(data.additionalExtensionIds.map((extensionId) => ADDITIONAL_EXTENSIONS.get(extensionId)));
+  }
   let generatedHtmlContent;
   let generatedJsonContent;
   let plainTextContent;
@@ -113,15 +121,15 @@ export function transformController(
       // Transforming content to HTML
       if (data.jsonContent != null) {
         const start = Date.now();
-        generatedHtmlContent = generateHTML(data.jsonContent, EXTENSIONS);
+        generatedHtmlContent = generateHTML(data.jsonContent, extensions);
         updateCounterAndTimer(start, j2hCounter, j2hTimer);
       }
       // Cleaning HTML content
       if (data.htmlContent != null) {
         const start = Date.now();
         cleanHtml = generateHTML(
-          generateJSON(data.htmlContent, EXTENSIONS),
-          EXTENSIONS,
+          generateJSON(data.htmlContent, extensions),
+          extensions,
         );
         updateCounterAndTimer(start, cleanHtmlCounter, cleanHtmlTimer);
       }
@@ -130,15 +138,15 @@ export function transformController(
       // Transforming content to JSON
       if (data.htmlContent != null) {
         const start = Date.now();
-        generatedJsonContent = generateJSON(data.htmlContent, EXTENSIONS);
+        generatedJsonContent = generateJSON(data.htmlContent, extensions);
         updateCounterAndTimer(start, h2jCounter, h2jTimer);
       }
       // Cleaning JSON content
       if (data.jsonContent != null) {
         const start = Date.now();
         cleanJson = generateJSON(
-          generateHTML(data.jsonContent, EXTENSIONS),
-          EXTENSIONS,
+          generateHTML(data.jsonContent, extensions),
+          extensions,
         );
         updateCounterAndTimer(start, cleanJsonCounter, cleanJsonTimer);
       }
@@ -147,16 +155,16 @@ export function transformController(
     if (data.requestedFormats.includes(TransformationFormat.PLAINTEXT)) {
       if (data.jsonContent != null) {
         const start = Date.now();
-        plainTextContent = generateText(data.jsonContent, EXTENSIONS);
+        plainTextContent = generateText(data.jsonContent, extensions);
         updateCounterAndTimer(start, j2plainTextCounter, j2plainTextTimer);
       } else if (data.htmlContent != null) {
         const start = Date.now();
         if (generatedJsonContent != null) {
-          plainTextContent = generateText(generatedJsonContent, EXTENSIONS);
+          plainTextContent = generateText(generatedJsonContent, extensions);
         } else {
           plainTextContent = generateText(
-            generateJSON(data.htmlContent, EXTENSIONS),
-            EXTENSIONS,
+            generateJSON(data.htmlContent, extensions),
+            extensions,
           );
         }
         updateCounterAndTimer(start, h2plainTextCounter, h2plainTextTimer);
