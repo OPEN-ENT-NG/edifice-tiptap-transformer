@@ -107,7 +107,7 @@ export function transformController(
 ): Promise<void> {
   const data: ContentTransformerRequest = req.body as ContentTransformerRequest;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const extensions: any[] = [...EXTENSIONS];
+  let extensions: any[] = [...EXTENSIONS];
   if (
     data.additionalExtensionIds !== null &&
     data.additionalExtensionIds.length > 0
@@ -115,7 +115,7 @@ export function transformController(
     const additionalExtensions = data.additionalExtensionIds.map(
       (extensionId) => ADDITIONAL_EXTENSIONS.get(extensionId),
     );
-    extensions.concat(additionalExtensions);
+    extensions = extensions.concat(additionalExtensions);
   }
   let generatedHtmlContent;
   let generatedJsonContent;
