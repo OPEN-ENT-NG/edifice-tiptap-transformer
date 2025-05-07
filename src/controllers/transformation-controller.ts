@@ -11,22 +11,24 @@ import {
 import { generateText } from '@tiptap/core';
 import { generateHTML, generateJSON } from '@tiptap/html';
 
+import { AttachmentTransformer } from '@edifice.io/tiptap-extensions';
 import { Alert } from '@edifice.io/tiptap-extensions/alert';
 import { Attachment } from '@edifice.io/tiptap-extensions/attachment';
-import { AttachmentTransformer } from '@edifice.io/tiptap-extensions';
 import { Audio } from '@edifice.io/tiptap-extensions/audio';
+import { ConversationHistory } from '@edifice.io/tiptap-extensions/conversation-history';
+import { ConversationHistoryBody } from '@edifice.io/tiptap-extensions/conversation-history-body';
 import { FontSize } from '@edifice.io/tiptap-extensions/font-size';
 import { CustomHeading } from '@edifice.io/tiptap-extensions/heading';
 import { CustomHighlight } from '@edifice.io/tiptap-extensions/highlight';
 import { Hyperlink } from '@edifice.io/tiptap-extensions/hyperlink';
 import { Iframe } from '@edifice.io/tiptap-extensions/iframe';
 import { Image } from '@edifice.io/tiptap-extensions/image';
+import { InformationPane } from '@edifice.io/tiptap-extensions/information-pane';
 import { LineHeight } from '@edifice.io/tiptap-extensions/line-height';
 import { Linker } from '@edifice.io/tiptap-extensions/linker';
 import { MathJax } from '@edifice.io/tiptap-extensions/mathjax';
 import { Paragraph } from '@edifice.io/tiptap-extensions/paragraph';
 import { Video } from '@edifice.io/tiptap-extensions/video';
-import { InformationPane } from '@edifice.io/tiptap-extensions/information-pane';
 
 import { Color } from '@tiptap/extension-color';
 import FontFamily from '@tiptap/extension-font-family';
@@ -93,8 +95,9 @@ const EXTENSIONS = [
   InformationPane,
 ];
 
-export const ADDITIONAL_EXTENSIONS = new Map<string, any>([
-  ["conversation-history", ConversationHistory],
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const ADDITIONAL_EXTENSIONS = new Map<string, any[] | any>([
+  ['conversation-history', [ConversationHistory, ConversationHistoryBody]],
 ]);
 
 export function transformController(
@@ -103,9 +106,16 @@ export function transformController(
   serviceVersion: number,
 ): Promise<void> {
   const data: ContentTransformerRequest = req.body as ContentTransformerRequest;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const extensions: any[] = [...EXTENSIONS];
-  if (data.additionalExtensionIds !== null && data.additionalExtensionIds.length > 0) {
-    extensions.concat(data.additionalExtensionIds.map((extensionId) => ADDITIONAL_EXTENSIONS.get(extensionId)));
+  if (
+    data.additionalExtensionIds !== null &&
+    data.additionalExtensionIds.length > 0
+  ) {
+    const additionalExtensions = data.additionalExtensionIds.map(
+      (extensionId) => ADDITIONAL_EXTENSIONS.get(extensionId),
+    );
+    extensions.concat(additionalExtensions);
   }
   let generatedHtmlContent;
   let generatedJsonContent;
