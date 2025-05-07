@@ -115,7 +115,7 @@ export function transformController(
     const additionalExtensions = data.additionalExtensionIds.map(
       (extensionId) => ADDITIONAL_EXTENSIONS.get(extensionId),
     );
-    extensions = extensions.concat(additionalExtensions);
+    extensions = [...extensions, ...additionalExtensions];
   }
   let generatedHtmlContent;
   let generatedJsonContent;
