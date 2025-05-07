@@ -96,7 +96,7 @@ const EXTENSIONS = [
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const ADDITIONAL_EXTENSIONS = new Map<string, any[] | any>([
+export const ADDITIONAL_EXTENSIONS = new Map<string, any[]>([
   ['conversation-history', [ConversationHistory, ConversationHistoryBody]],
 ]);
 
@@ -115,7 +115,10 @@ export function transformController(
     const additionalExtensions = data.additionalExtensionIds.map(
       (extensionId) => ADDITIONAL_EXTENSIONS.get(extensionId),
     );
+    console.log('data.additionalExtensionIds', data.additionalExtensionIds);
+    console.log('additionalExtensions', additionalExtensions);
     extensions = [...extensions, ...additionalExtensions];
+    console.log('newExtensions', extensions);
   }
   let generatedHtmlContent;
   let generatedJsonContent;
@@ -137,6 +140,7 @@ export function transformController(
       // Cleaning HTML content
       if (data.htmlContent != null) {
         const start = Date.now();
+        console.log('extensions', extensions);
         cleanHtml = generateHTML(
           generateJSON(data.htmlContent, extensions),
           extensions,
