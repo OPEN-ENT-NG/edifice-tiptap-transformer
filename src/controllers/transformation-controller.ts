@@ -110,6 +110,7 @@ export function transformController(
   let extensions: any[] = [...EXTENSIONS];
   if (
     data.additionalExtensionIds !== null &&
+    data.additionalExtensionIds !== undefined &&
     data.additionalExtensionIds.length > 0
   ) {
     const additionalExtensions = data.additionalExtensionIds.map(
