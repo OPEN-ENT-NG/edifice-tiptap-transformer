@@ -11,12 +11,14 @@ import {
 import { generateText } from '@tiptap/core';
 import { generateHTML, generateJSON } from '@tiptap/html';
 
-import { AttachmentTransformer } from '@edifice.io/tiptap-extensions';
+import {
+  AttachmentTransformer,
+  ConversationHistoryBody,
+} from '@edifice.io/tiptap-extensions';
 import { Alert } from '@edifice.io/tiptap-extensions/alert';
 import { Attachment } from '@edifice.io/tiptap-extensions/attachment';
 import { Audio } from '@edifice.io/tiptap-extensions/audio';
 import { ConversationHistory } from '@edifice.io/tiptap-extensions/conversation-history';
-import { ConversationHistoryBody } from '@edifice.io/tiptap-extensions/conversation-history-body';
 import { FontSize } from '@edifice.io/tiptap-extensions/font-size';
 import { CustomHeading } from '@edifice.io/tiptap-extensions/heading';
 import { CustomHighlight } from '@edifice.io/tiptap-extensions/highlight';
@@ -96,7 +98,7 @@ const EXTENSIONS = [
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const ADDITIONAL_EXTENSIONS = new Map<string, any[]>([
+export const ADDITIONAL_EXTENSIONS = new Map<string, any[] | any>([
   ['conversation-history', [ConversationHistory, ConversationHistoryBody]],
 ]);
 
@@ -113,13 +115,19 @@ export function transformController(
     data.additionalExtensionIds !== undefined &&
     data.additionalExtensionIds.length > 0
   ) {
-    const additionalExtensions = data.additionalExtensionIds.map(
-      (extensionId) => ADDITIONAL_EXTENSIONS.get(extensionId),
-    );
-    console.log('data.additionalExtensionIds', data.additionalExtensionIds);
-    console.log('additionalExtensions', additionalExtensions);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const additionalExtensions: any[] = [];
+    data.additionalExtensionIds.forEach((extensionId) => {
+      const extTmp = ADDITIONAL_EXTENSIONS.get(extensionId);
+      if (extTmp) {
+        if (Array.isArray(extTmp)) {
+          additionalExtensions.push(...extTmp);
+        } else {
+          additionalExtensions.push(extTmp);
+        }
+      }
+    });
     extensions = [...extensions, ...additionalExtensions];
-    console.log('newExtensions', extensions);
   }
   let generatedHtmlContent;
   let generatedJsonContent;
@@ -141,7 +149,6 @@ export function transformController(
       // Cleaning HTML content
       if (data.htmlContent != null) {
         const start = Date.now();
-        console.log('extensions', extensions);
         cleanHtml = generateHTML(
           generateJSON(data.htmlContent, extensions),
           extensions,
