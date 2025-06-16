@@ -1,41 +1,36 @@
-FROM node as builder
+FROM node:18.20.8-alpine3.21 AS builder
 
-ENV HUSKY 0
+ENV HUSKY=0
 
 # Install pnpm
-RUN npm install -g pnpm
+RUN npm install -g pnpm@8.6.6
 
 # Create app directory
 WORKDIR /usr/src/app
 
 # Install app dependencies
-COPY package*.json pnpm-lock.yaml ./
+COPY package*.json ./
 
-RUN pnpm i --frozen-lockfile
+RUN pnpm i --prod --no-frozen-lockfile
 
 COPY . .
 
 RUN pnpm run build
+RUN pnpm prune --production
 
-FROM node:18-slim as production
+FROM gcr.io/distroless/nodejs18-debian11 AS production
 
-# Install pnpm
-RUN npm install -g pnpm
 
-ENV NODE_ENV production
-USER node
+ENV NODE_ENV=production
 
-# Create app directory
 WORKDIR /usr/src/app
 
-# Install app dependencies
-COPY package*.json pnpm-lock.yaml ./
-
-ENV HUSKY 0
-
-RUN pnpm i --frozen-lockfile --production
+COPY package.json .
 
 COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/node_modules ./node_modules
 
 EXPOSE 3000
-CMD [ "node", "dist/index.js" ]
+
+USER node
+CMD [ "--es-module-specifier-resolution=node", "/usr/src/app/dist/index.js" ]
