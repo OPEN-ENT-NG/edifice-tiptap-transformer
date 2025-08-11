@@ -1,3 +1,10 @@
+# À propos d'edifice-tiptap-transformer
+    
+* Licence : [AGPL v3](http://www.gnu.org/licenses/agpl.txt) - Copyright Edifice
+* Financeur(s) : Edifice
+* Développeur(s) : Edifice
+* Description : service permettant de transformer des contenus de l'ancien éditeur dans le nouveau format tiptap.
+
 # Rich content transformer
 
 - [Rich content transformer](#rich-content-transformer)
