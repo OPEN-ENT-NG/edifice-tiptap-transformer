@@ -75,7 +75,7 @@ const EXTENSIONS = [
   TableHeader,
   TableOrTemplateCell,
   TextAlign.configure({
-    types: ['heading', 'paragraph', 'custom-image', 'video', 'audio'],
+    types: ['heading', 'paragraph', 'custom-image', 'video', 'audio', 'iframe'],
   }),
   CustomHeading.configure({
     levels: [1, 2],
