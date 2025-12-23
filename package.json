@@ -1,6 +1,6 @@
 {
   "name": "rich-content-transformer",
-  "version": "1.0.22-develop-b2school.17",
+  "version": "1.0.22-develop-b2school.1",
   "description": "Uses TipTap library to transform HTML to JSON and back",
   "license": "ISC",
   "author": "OpenDigitalEducation",
@@ -27,6 +27,7 @@
     "@tiptap/extension-font-family": "2.11.0",
     "@tiptap/extension-heading": "2.11.0",
     "@tiptap/extension-highlight": "2.11.0",
+    "@tiptap/extension-horizontal-rule": "2.11.0",
     "@tiptap/extension-image": "2.11.0",
     "@tiptap/extension-link": "2.11.0",
     "@tiptap/extension-list-item": "2.11.0",
