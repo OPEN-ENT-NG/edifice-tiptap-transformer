@@ -157,3 +157,5 @@ docker-compose run --rm load-tester run src/index.js # Starts the tests
 ## Extension
 
 To add more files to the test set, add html files in `test/data/big` or `test/data/small` (depending on its size) and make sure to change the way `smallHtmls` and `bigHtmls` are loaded in [index.ts](./index.ts).
+
+Ce dépôt est un miroir officiel du dépôt Edifice : https://github.com/edificeio/edifice-tiptap-transformer
